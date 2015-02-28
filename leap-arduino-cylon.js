@@ -2,6 +2,8 @@
   This script allows for simultaneous movement of two servos under no load.
   With a series of really rapid hand movements, the servos occasionally stall and the program quits.
   Running a separate, appropriate power supply for the servos instead of relying on Arduino power should help.
+  I wired a separate 5v, 2a power supply to my breadboard for the two servos and it works fine. (Again, the
+  servos are under no load.)
 */
 
 var Cylon = require('cylon');
@@ -13,7 +15,7 @@ var now;
  
 Cylon.robot({
   connections: [{ name: 'leapmotion', adaptor: 'leapmotion', port: '127.0.0.1:6437'},
-    {name: 'arduino', adaptor: 'firmata', port: '/dev/tty.usbmodem1411'}],
+    {name: 'arduino', adaptor: 'firmata', port: '/dev/tty.usbmodemfa141'}],
   devices: [{ name: 'leapmotion', driver: 'leapmotion', connection: 'leapmotion'},
     {name: 'servo1', driver: 'servo', pin: 9, connection: 'arduino'},
     {name: 'servo2', driver: 'servo', pin: 10, connection: 'arduino'}],

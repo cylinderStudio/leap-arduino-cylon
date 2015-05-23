@@ -6,6 +6,20 @@
   servos are under no load.)
 */
 
+// TO DO
+/*
+ - check if frame.hands.length > 1
+ - hand_left = frame.hands().leftmost()
+ - hand_right = frame.hands().rightmost()
+
+ - else if frame.hands.length === 1
+ - hand_right = frame.hands[0];
+
+ - else: angles set to 90
+
+ - yaw instead of roll
+*/
+
 var Cylon = require('cylon');
  
 var hand;
@@ -17,8 +31,10 @@ Cylon.robot({
   connections: [{ name: 'leapmotion', adaptor: 'leapmotion', port: '127.0.0.1:6437'},
     {name: 'arduino', adaptor: 'firmata', port: '/dev/tty.usbmodemfa141'}],
   devices: [{ name: 'leapmotion', driver: 'leapmotion', connection: 'leapmotion'},
-    {name: 'servo1', driver: 'servo', pin: 9, connection: 'arduino'},
-    {name: 'servo2', driver: 'servo', pin: 10, connection: 'arduino'}],
+    {name: 'servo1', driver: 'servo', pin: 5, connection: 'arduino'},
+    {name: 'servo2', driver: 'servo', pin: 6, connection: 'arduino'},
+    {name: 'servo3', driver: 'servo', pin: 9, connection: 'arduino'},
+    {name: 'servo4', driver: 'servo', pin: 10, connection: 'arduino'}],
   work: function(my) {
     var time = Date.now();
  
@@ -27,18 +43,20 @@ Cylon.robot({
       now = Date.now();
       if (now >= time + 10) {
         time = now;
-        if (frame.hands.length > 0) {
+          if (frame.hands.length > 0) {
           hand = frame.hands[0];
           roll = hand.roll() * (180/Math.PI);
           roll = Math.floor(roll + 90);
           pitch = hand.pitch() * (180/Math.PI);
           pitch = Math.floor(pitch + 90);
    
-          if (roll > -1 && roll < 181) { my.servo1.angle(roll); }
-          if (pitch > -1 && pitch < 181) { my.servo2.angle(pitch); }
+          if (roll > -1 && roll < 181) { my.servo1.angle(roll); my.servo3.angle(roll); }
+          if (pitch > -1 && pitch < 181) { my.servo2.angle(180 - pitch); my.servo4.angle(pitch); }
         } else {
           my.servo1.angle(90);
           my.servo2.angle(90);
+          my.servo3.angle(90);
+          my.servo4.angle(90);
         } 
       }
     });

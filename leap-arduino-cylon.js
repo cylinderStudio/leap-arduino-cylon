@@ -16,15 +16,13 @@
  - hand_right = frame.hands[0];
 
  - else: angles set to 90
-
- - yaw instead of roll
 */
 
 var Cylon = require('cylon');
  
 var hand;
-var roll = 0;       // hand rolling side-to-side rotates servo1 back and forth
-var pitch = 0;      // hand rotating forwards (downward) and backwards (upward) rotates servo2 back and forth
+var yaw = 0;        // hand rotating left/right rotates servo1 and servo3 back and forth
+var pitch = 0;      // hand rotating forwards (downward) and backwards (upward) rotates servo2 and servo4 back and forth
 var now;
  
 Cylon.robot({
@@ -45,13 +43,13 @@ Cylon.robot({
         time = now;
           if (frame.hands.length > 0) {
           hand = frame.hands[0];
-          roll = hand.roll() * (180/Math.PI);
-          roll = Math.floor(roll + 90);
+          yaw = hand.yaw() * (180/Math.PI);
+          yaw = Math.floor(yaw + 90);
           pitch = hand.pitch() * (180/Math.PI);
           pitch = Math.floor(pitch + 90);
    
-          if (roll > -1 && roll < 181) { my.servo1.angle(roll); my.servo3.angle(roll); }
-          if (pitch > -1 && pitch < 181) { my.servo2.angle(180 - pitch); my.servo4.angle(pitch); }
+          if (yaw > -1 && yaw < 181) { my.servo1.angle(yaw); my.servo3.angle(yaw); }
+          //if (pitch > -1 && pitch < 181) { my.servo2.angle(180 - pitch); my.servo4.angle(pitch); }
         } else {
           my.servo1.angle(90);
           my.servo2.angle(90);

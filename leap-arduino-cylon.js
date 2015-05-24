@@ -1,28 +1,18 @@
 /*
-  This script allows for simultaneous movement of two servos under no load.
-  With a series of really rapid hand movements, the servos occasionally stall and the program quits.
-  Running a separate, appropriate power supply for the servos instead of relying on Arduino power should help.
-  I wired a separate 5v, 2a power supply to my breadboard for the two servos and it works fine. (Again, the
-  servos are under no load.)
-*/
+  This script allows for controlling four servos, one pair for each hand, using the Leap Motion controller
+  via CylonJs. Enter the right hand into the LeapMotion field first, then the left hand, to consistently
+  map right hand to the right_hand variable and the left hand to the left_hand variable.
 
-// TO DO
-/*
- - check if frame.hands.length > 1
- - hand_left = frame.hands().leftmost()
- - hand_right = frame.hands().rightmost()
-
- - else if frame.hands.length === 1
- - hand_right = frame.hands[0];
-
- - else: angles set to 90
+  Run a separate, appropriate power supply for the servos instead of relying on Arduino power.
+  I wired a separate 5v, 2a power supply to my breadboard for four micros servos under no load and 
+  it works consistently with consistent, rapid hand movement & no stalls.
 */
 
 var Cylon = require('cylon');
  
-var hand;
-var yaw = 0;        // hand rotating left/right rotates servo1 and servo3 back and forth
-var pitch = 0;      // hand rotating forwards (downward) and backwards (upward) rotates servo2 and servo4 back and forth
+var right_hand, left_hand;
+var right_yaw = 0, left_yaw = 0;        // hand rotating left/right rotates servo1 and servo3 back and forth
+var right_pitch = 0, left_pitch = 0;    // hand rotating forwards (downward) and backwards (upward) rotates servo2 and servo4 back and forth
 var now;
  
 Cylon.robot({
@@ -41,15 +31,20 @@ Cylon.robot({
       now = Date.now();
       if (now >= time + 10) {
         time = now;
-          if (frame.hands.length > 0) {
-          hand = frame.hands[0];
-          yaw = hand.yaw() * (180/Math.PI);
-          yaw = Math.floor(yaw + 90);
-          pitch = hand.pitch() * (180/Math.PI);
-          pitch = Math.floor(pitch + 90);
-   
-          if (yaw > -1 && yaw < 181) { my.servo1.angle(yaw); my.servo3.angle(yaw); }
-          //if (pitch > -1 && pitch < 181) { my.servo2.angle(180 - pitch); my.servo4.angle(pitch); }
+        if (frame.hands.length === 2) {
+          right_hand = frame.hands[0];
+          left_hand = frame.hands[1];
+
+          right_yaw = radiansToAdjustedDegrees(right_hand.yaw());
+          right_pitch = radiansToAdjustedDegrees(right_hand.pitch());
+          left_yaw = radiansToAdjustedDegrees(left_hand.yaw());
+          left_pitch = radiansToAdjustedDegrees(left_hand.pitch());
+
+          if (right_yaw > -1 && right_yaw < 181) { my.servo1.angle(right_yaw); }
+          if (right_pitch > -1 && right_pitch < 181) { my.servo2.angle(right_pitch); }
+          if (left_yaw > -1 && left_yaw < 181) { my.servo3.angle(left_yaw); }
+          // angle is reversed on my fourth servo for some reason
+          if (left_pitch > -1 && left_pitch < 181) { my.servo4.angle(180 - left_pitch); }
         } else {
           my.servo1.angle(90);
           my.servo2.angle(90);
@@ -60,3 +55,10 @@ Cylon.robot({
     });
   }
 }).start();
+
+function radiansToAdjustedDegrees(radians) {
+  // take radian reading and return degree value adjusted for our desired range/midpoint of servo range
+  degrees = radians * (180/Math.PI);
+  degrees = Math.floor(degrees + 90);
+  return degrees;
+}

@@ -5,7 +5,7 @@
 
   Run a separate, appropriate power supply for the servos instead of relying on Arduino power.
   I wired a separate 5v, 2a power supply to my breadboard for four micros servos under no load and 
-  it works consistently with consistent, rapid hand movement & no stalls.
+  it works reliably with constant, rapid hand movement & no stalls.
 */
 
 var Cylon = require('cylon');
